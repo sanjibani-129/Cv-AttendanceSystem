@@ -19,7 +19,7 @@
     "ignoreDeprecations": "6.0",
 
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"] 
     }
   },
   "include": [
@@ -29,4 +29,4 @@
     ".next/types/**/*.ts"
   ],
   "exclude": ["node_modules"]
-}
+} 

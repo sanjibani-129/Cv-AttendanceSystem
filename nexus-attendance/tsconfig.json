@@ -19,14 +19,20 @@
     "ignoreDeprecations": "6.0",
 
     "paths": {
-      "@/*": ["src/*"]
+      "@/": ["src/"]
     }
   },
   "include": [
     "next-env.d.ts",
+<<<<<<< HEAD
+    "*/.ts",
+    "*/.tsx",
+    ".next/types/*/.ts"
+=======
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"
+>>>>>>> origin/main
   ],
   "exclude": ["node_modules"]
 }

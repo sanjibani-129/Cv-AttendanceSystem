@@ -1,0 +1,8 @@
+venv/
+data/*.db
+data/known_faces/
+data/embeddings.pkl
+.env
+__pycache__/
+*.pyc
+.streamlit/

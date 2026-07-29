@@ -1,0 +1,11 @@
+import { createClient } from "@supabase/supabase-js";
+
+const url = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
+const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string;
+
+// IMPORTANT: only import this file from files under src/app/api/**.
+// The service role key bypasses row-level security, so it must never be
+// bundled into client-side code.
+export const supabaseServer = createClient(url, serviceKey, {
+  auth: { persistSession: false },
+});

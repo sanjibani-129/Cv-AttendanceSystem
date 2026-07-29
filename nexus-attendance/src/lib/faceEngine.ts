@@ -72,7 +72,7 @@ export interface MatchCandidate {
   id: string;
   name: string;
   roll_no: string;
-  descriptor: number[];
+  descriptors: number[][]; // every captured sample for this member, not an average
 }
 
 export interface MatchResult {
@@ -82,21 +82,30 @@ export interface MatchResult {
 }
 
 /**
- * Compares a live descriptor against every registered member and returns
- * the closest match, or null if nothing clears the threshold.
+ * Compares a live descriptor against every sample of every registered
+ * member and returns the closest single match, or null if nothing clears
+ * the threshold. Matching against each stored sample individually (instead
+ * of an averaged descriptor) is what face-api.js's own FaceMatcher does —
+ * averaging embeddings together tends to produce a "blurred" vector that's
+ * farther from any real live frame than a genuine sample would be.
  */
 export function matchFace(
   liveDescriptor: Float32Array,
   candidates: MatchCandidate[],
-  threshold = Number(process.env.NEXT_PUBLIC_FACE_MATCH_THRESHOLD ?? 0.5)
+  // face-api.js's own docs use 0.6 as the standard euclidean-distance cutoff
+  // for its 128-d descriptors; 0.5 was stricter than recommended and could
+  // reject genuine matches.
+  threshold = Number(process.env.NEXT_PUBLIC_FACE_MATCH_THRESHOLD ?? 0.6)
 ): MatchResult | null {
   let best: MatchResult | null = null;
 
   for (const candidate of candidates) {
-    const distance = euclideanDistance(liveDescriptor, candidate.descriptor);
-    if (!best || distance < best.distance) {
-      const confidence = Math.max(0, (1 - distance / 1.0)) * 100;
-      best = { member: candidate, distance, confidence };
+    for (const sample of candidate.descriptors) {
+      const distance = euclideanDistance(liveDescriptor, sample);
+      if (!best || distance < best.distance) {
+        const confidence = Math.max(0, 1 - distance / 1.0) * 100;
+        best = { member: candidate, distance, confidence };
+      }
     }
   }
 
@@ -104,12 +113,7 @@ export function matchFace(
   return null;
 }
 
-/** Averages several descriptors captured during registration into one. */
-export function averageDescriptors(descriptors: Float32Array[]): number[] {
-  const length = descriptors[0].length;
-  const avg = new Array(length).fill(0);
-  for (const d of descriptors) {
-    for (let i = 0; i < length; i++) avg[i] += d[i];
-  }
-  return avg.map((v) => v / descriptors.length);
+/** Converts captured Float32Array samples to plain arrays for JSON storage. */
+export function toStoredSamples(descriptors: Float32Array[]): number[][] {
+  return descriptors.map((d) => Array.from(d));
 }

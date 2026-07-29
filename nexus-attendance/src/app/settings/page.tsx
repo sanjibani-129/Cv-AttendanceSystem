@@ -21,7 +21,7 @@ export default function SettingsPage() {
           <div className="rounded-xl border border-base-700 p-4">
             <p className="text-white/40">Match threshold (env)</p>
             <p className="mt-1 font-mono text-brand">
-              NEXT_PUBLIC_FACE_MATCH_THRESHOLD (default 0.5)
+              NEXT_PUBLIC_FACE_MATCH_THRESHOLD (default 0.6)
             </p>
           </div>
           <div className="rounded-xl border border-base-700 p-4">

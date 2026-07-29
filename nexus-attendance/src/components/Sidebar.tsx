@@ -11,6 +11,7 @@ import {
   FileText,
   Settings,
   ScanFace,
+  X,
 } from "lucide-react";
 import { cx } from "@/lib/utils";
 
@@ -24,22 +25,37 @@ const NAV = [
   { href: "/settings", label: "Settings", icon: Settings },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({
+  mobileOpen = false,
+  onClose,
+}: {
+  mobileOpen?: boolean;
+  onClose?: () => void;
+}) {
   const pathname = usePathname();
 
-  return (
-    <aside className="flex w-64 shrink-0 flex-col justify-between border-r border-base-700 bg-base-900/60 px-4 py-6">
+  const content = (
+    <>
       <div>
-        <div className="mb-8 flex items-center gap-2 px-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-brand/40 bg-brand-muted text-brand shadow-glow-sm">
-            <ScanFace size={20} />
+        <div className="mb-8 flex items-center justify-between px-2">
+          <div className="flex items-center gap-2">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-brand/40 bg-brand-muted text-brand shadow-glow-sm">
+              <ScanFace size={20} />
+            </div>
+            <div>
+              <p className="font-semibold leading-tight">NEXUS</p>
+              <p className="font-mono text-[10px] tracking-widest text-white/40">
+                ATTENDANCE AI
+              </p>
+            </div>
           </div>
-          <div>
-            <p className="font-semibold leading-tight">NEXUS</p>
-            <p className="font-mono text-[10px] tracking-widest text-white/40">
-              ATTENDANCE AI
-            </p>
-          </div>
+          <button
+            onClick={onClose}
+            aria-label="Close navigation menu"
+            className="text-white/40 hover:text-white lg:hidden"
+          >
+            <X size={20} />
+          </button>
         </div>
 
         <nav className="space-y-1">
@@ -49,6 +65,8 @@ export default function Sidebar() {
               <Link
                 key={href}
                 href={href}
+                onClick={onClose}
+                aria-current={active ? "page" : undefined}
                 className={cx(
                   "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors",
                   active
@@ -72,6 +90,25 @@ export default function Sidebar() {
           face-api.js engine · Supabase · realtime
         </p>
       </div>
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      {/* Desktop: static column */}
+      <aside className="hidden w-64 shrink-0 flex-col justify-between border-r border-base-700 bg-base-900/60 px-4 py-6 lg:flex">
+        {content}
+      </aside>
+
+      {/* Mobile: overlay drawer */}
+      {mobileOpen && (
+        <div className="fixed inset-0 z-[80] lg:hidden">
+          <div className="absolute inset-0 bg-black/70" onClick={onClose} />
+          <aside className="relative flex h-full w-72 max-w-[80vw] flex-col justify-between border-r border-base-700 bg-base-950 px-4 py-6">
+            {content}
+          </aside>
+        </div>
+      )}
+    </>
   );
 }

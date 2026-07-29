@@ -7,7 +7,7 @@ create table if not exists members (
   name text not null,
   roll_no text not null unique,
   email text not null unique,
-  descriptor jsonb not null,        -- 128-length face-api.js descriptor, stored as a JSON array
+  descriptor jsonb not null,        -- array of face-api.js descriptor samples (number[][]), one per captured registration frame — NOT averaged into a single descriptor (see src/lib/faceEngine.ts for why)
   created_at timestamptz not null default now()
 );
 
